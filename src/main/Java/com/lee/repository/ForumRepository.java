@@ -82,7 +82,7 @@ public class ForumRepository extends DataAccessObject<Forum> {
   }
 
   @Override
-  public int delete(Forum obj) {
+  public int delete(int obj) {
     return 0;
   }
 

@@ -1,20 +1,38 @@
 package com.lee.servlet.UserAccountServlet;
 
+import com.lee.business.Business;
+import com.lee.business.UserAccount;
 import com.lee.model.User;
 import com.lee.repository.UserRepository;
 import com.lee.repository.util.DriverConnectionManager;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import javax.faces.flow.SwitchCase;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class registerServlet extends HttpServlet {
+
+  private Business business;
+  private Connection connection;
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    try {
+      this.connection = new DriverConnectionManager().getConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -33,74 +51,90 @@ public class registerServlet extends HttpServlet {
     String lastname = req.getParameter("lastname");
     String password = req.getParameter("password");
     String age = req.getParameter("age");
-
+    // Connection connection = (Connection) req.getAttribute("connection");
     Date date = new Date();
     date.setTime(date.getTime());
+    Map<String, String> message = new HashMap<>();
 
-    User user = null;
-    try {
-      user = new User();
-      user.setUsername(username);
-      user.setEmail(email);
-      user.setFirst_name(firstname);
-      user.setLast_name(lastname);
-      user.setPassword(password);
-      user.setAge(Integer.parseInt(age));
-      user.setCreated_on(date);
-    } catch (NumberFormatException e) {
-      PrintWriter out = resp.getWriter();
-      out.println("<h2>");
-      out.println("Age");
-      out.println("</h2>");
+    business = new UserAccount(new UserRepository(connection));
+    UserAccount userAccount = (UserAccount) business;
+
+    boolean checkParameterIsnull =
+        userAccount.checkIfParamaterHasNull(username, email, firstname, lastname, password, age);
+
+    if (!checkParameterIsnull) {
+      String checkInputHasNull = "form should not be empty";
+      message.put("checkInputHasNull", checkInputHasNull);
+      Map<String ,String > values = returnInputValue(username, email, firstname, lastname, password, age);
+      req.setAttribute("data", values);
+      req.setAttribute("message",message);
       doGet(req, resp);
+      return;
     }
-    int rowsAffected = 0;
-    Connection connection = null;
-    try {
-      connection = new DriverConnectionManager().getConnection();
-      UserRepository dao = new UserRepository(connection);
-      boolean checkuserName = dao.CheckifExists(username, "username");
-      boolean checkuserEmail = dao.CheckifExists(email, "email");
-      if (!checkuserEmail || !checkuserName) {
-        if (!checkuserEmail) {
-          String checkEmailMessage = "email already exists";
-          req.setAttribute("checkEmailMessage", checkEmailMessage);
-        }
-        if (!checkuserName) {
-          String checkUsernameMessage = "username already exists";
-          req.setAttribute("checkUsernameMessage", checkUsernameMessage);
-        }
-        HashMap<String, Object> values = new HashMap<>();
-        values.put("username", username);
-        values.put("email", email);
-        values.put("firstname", firstname);
-        values.put("lastname", lastname);
-        values.put("password", password);
-        values.put("age", age);
-        req.setAttribute("data", values);
-        doGet(req, resp);
-      } else {
-        try {
-          rowsAffected = dao.create(user);
-        } catch (RuntimeException e) {
-          e.printStackTrace();
-        }
-        System.out.println("rowsAffected" + rowsAffected);
+
+    String checkUsernameMessage = "username already exists";
+    String checkEmailMessage = "email already exists";
+    String wrongFormatMessage = "Only numbers";
+
+    boolean checkEmail = userAccount.checkIfExist("email", email, connection);
+    boolean checkUsername = userAccount.checkIfExist("username", username, connection);
+    boolean checkFormat = userAccount.checkIntegerFormat(age);
+    printLog("section 1");
+    if (!checkEmail || !checkUsername || !checkFormat) {
+      printLog("section 1.1");
+      if (!checkEmail) {
+        printLog("if (!checkEmail)");
+        message.put("checkEmailMessage", checkEmailMessage);
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
+      if (!checkUsername) {
+        printLog("if (!checkUsername)");
+        message.put("checkUsernameMessage", checkUsernameMessage);
+      }
+      if (!checkFormat) {
+        message.put("wrongFormatMessage", wrongFormatMessage);
+      }
+      HashMap<String, String> values =
+          returnInputValue(username, email, firstname, lastname, password, age);
+
+      req.setAttribute("message", message);
+      req.setAttribute("data", values);
+      doGet(req, resp);
+      return;
     }
-    String message = "";
-    if (rowsAffected != 1) {
-      message = "F";
+    printLog("section 2");
+    boolean checkParamAndRegisterUser =
+        userAccount.checkParamAndRegisterUser(username, email, firstname, lastname, password, age);
+    if (!checkParamAndRegisterUser) {
+      resp.sendError(500, "Error during register");
+      return;
     } else {
-      message = "success";
-      resp.sendRedirect(getServletContext().getInitParameter("uri") + "/home");
+      printLog("user created");
     }
+    System.out.println("user Register" + message);
+    resp.sendRedirect(getServletContext().getInitParameter("uri") + "/home");
   }
 
-  //  private <T> boolean checkIfExists(T val, String col, Connection connection) {
-  //    UserRepository userDao = new UserRepository(connection);
-  //    return null
-  //  }
+  private <T> void printLog(T val) {
+    System.out.println(
+        "------------------------------------------"
+            + val
+            + "---------------------------------------------------");
+  }
+
+  private HashMap<String, String> returnInputValue(
+      String username,
+      String email,
+      String firstname,
+      String lastname,
+      String password,
+      String age) {
+    HashMap<String, String> values = new HashMap<>();
+    values.put("username", username);
+    values.put("email", email);
+    values.put("firstname", firstname);
+    values.put("lastname", lastname);
+    values.put("password", password);
+    values.put("age", age);
+    return values;
+  }
 }

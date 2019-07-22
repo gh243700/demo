@@ -116,8 +116,11 @@ public class TopicRepository extends DataAccessObject<Topic> {
     return list;
   }
 
+  private final String DELETE = "";
   @Override
-  public int delete(Topic obj) {
+  public int delete(int obj) {
+
+
     return 0;
   }
 

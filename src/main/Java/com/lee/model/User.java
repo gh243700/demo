@@ -112,7 +112,7 @@ public class User implements DataTransferObject {
 
   @Override
   public String toString() {
-    return "User{"
+    return "UserAccount{"
         + "id="
         + id
         + ", username='"

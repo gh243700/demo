@@ -47,9 +47,9 @@
                 <p>302 posts</p>
             </div>
             <div class="col-11">
-                <blackquote class="blackquote">
+                <blockquote class="blackquote">
                     ${requestScope.topic.main_content}
-                </blackquote>
+                </blockquote>
             </div>
             <label for="textarea"></label>
         </section>

@@ -49,8 +49,7 @@
         <small class="form-text text-muted"
         >Type tags separated by commas. <br/>
             Each tag should be no longer than 25 characters.
-        </small
-        >
+        </small>
         <label for="textarea"></label>
         <textarea
                 name="content"

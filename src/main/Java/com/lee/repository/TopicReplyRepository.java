@@ -116,7 +116,7 @@ public class TopicReplyRepository extends DataAccessObject<TopicReply> {
   }
 
   @Override
-  public int delete(TopicReply obj) {
+  public int delete(int obj) {
     return 0;
   }
 

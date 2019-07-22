@@ -1,3 +1,5 @@
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <!DOCTYPE html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html lang="en">
@@ -13,7 +15,7 @@
   </head>
   <body>
     <header>
-      <jsp:include page="header.jsp"></jsp:include>
+      <jsp:include page="header.jsp"/>
     </header>
     <section class="container">
       <div class="row justify-content-center">
@@ -30,6 +32,7 @@
               class="form-control"
               placeholder="Display Name or Email"
               name="nameOrEmail"
+              value="${requestScope.value.name}"
             />
           </div>
 
@@ -39,6 +42,7 @@
               placeholder="Enter Password"
               class="form-control"
               name="password"
+              value="${requestScope.value.password}"
             />
           </div>
           <div class="row">

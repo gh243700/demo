@@ -51,7 +51,7 @@ public class ParentForumRepository extends DataAccessObject<Parent_Forum> {
   }
 
   @Override
-  public int delete(Parent_Forum obj) {
+  public int delete(int obj) {
     return 0;
   }
 

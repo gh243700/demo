@@ -1,72 +1,92 @@
-package com.lee.business.user;
+package com.lee.business;
 
+import com.lee.model.User;
+import com.lee.repository.DataAccessObject;
+import com.lee.repository.UserRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class UserAccount {
+public class UserAccount implements Business {
+  private DataAccessObject dataAccessObject;
 
-  public boolean checkifvaliduser(String emailOrname, String password, Connection connection) {
-    boolean check = false;
-    String sql = "SELECT *FROM users WHERE (username = ? OR email = ?) AND password =?";
-    try {
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setString(1, emailOrname);
-      preparedStatement.setString(2, emailOrname);
-      preparedStatement.setString(3, password);
-      ResultSet resultSet = preparedStatement.executeQuery();
-      String username = null;
-      while (resultSet.next()) {
-        username = resultSet.getString("username");
-        if (username != null) {
-          check = true;
-        }
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return false
-    }
-    return check;
+  public UserAccount(DataAccessObject dataAccessObject) {
+    this.dataAccessObject = dataAccessObject;
   }
 
-  public Integer getIdByusernameOrEmail(String info,Connection connection) {
-    String sql = "SELECT id FROM users WHERE username = ? OR email = ?";
-    Integer id = null;
-    try {
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setString(1, info);
-      preparedStatement.setString(2, info);
-      ResultSet resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        id = resultSet.getInt(1);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return null;
+  public Map<String, Object> checkifvaliduser(
+      String emailOrname, String password) {
+    UserRepository userRepository;
+    User user = null;
+    Map<String, Object> hashMap = new HashMap<>();
+    if (dataAccessObject instanceof UserRepository) {
+      userRepository = (UserRepository) dataAccessObject;
+      user = userRepository.readById(emailOrname, password);
     }
-    return id;
+    hashMap.put("boolean", user != null);
+    hashMap.put("User", user);
+    return hashMap;
   }
 
-  public <T> boolean CheckifExists(T val, String comumn, Connection connection) {
-    String sql = "SELECT *FROM users WHERE " + comumn + " =?";
-    boolean check = false;
-    try {
-      PreparedStatement statement = connection.prepareStatement(sql);
-      statement.setObject(1, val);
-      ResultSet resultSet = statement.executeQuery();
+  public boolean checkIfParamaterHasNull(String... str) {
+    for (int i = 0; i < str.length; i++) {
+      String param = str[i];
+      if (param == null || param.equals("")) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-      int id = -1;
-      while (resultSet.next()) {
-        id = resultSet.getInt("id");
-      }
-      if (id == -1) {
-        check = true;
-      }
-      System.out.println(check);
-    } catch (SQLException e) {
+  public boolean checkIntegerFormat(String val) {
+    try {
+      Integer.parseInt(val);
+    } catch (NumberFormatException e) {
       return false;
     }
-    return check;
+    return true;
+  }
+
+  public boolean checkParamAndRegisterUser(
+      String username,
+      String email,
+      String firstname,
+      String lastname,
+      String password,
+      String age) {
+    User user = null;
+    if (checkIfParamaterHasNull(username, email, firstname, lastname, password, age)) {
+      user = new User();
+      user.setUsername(username);
+      user.setEmail(email);
+      user.setFirst_name(firstname);
+      user.setLast_name(lastname);
+      user.setPassword(password);
+      user.setAge(Integer.parseInt(age));
+    }
+    UserRepository userRepository = (UserRepository) dataAccessObject;
+    return (userRepository.create(user) == 0);
+  }
+
+  public boolean checkIfExist(String column, Object value, Connection connection) {
+
+    String sql = "SELECT COUNT(*) FROM  users WHERE " + column + " = ?";
+    int count = 0;
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setObject(1, value);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) count = resultSet.getInt(1);
+      if (count != 0) {
+        return false;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
   }
 }

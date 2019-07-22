@@ -21,14 +21,17 @@ public class userAuthentication implements Filter {
       throws IOException, ServletException {
     HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
     System.out.println(getClass().getName());
-    Boolean url_Add_Topic= httpRequest.getRequestURI().contains("Add_Topic") || httpRequest.getParameter("do") != null;
-    Boolean url_Topic = httpRequest.getRequestURI().contains("topic") && httpRequest.getParameter("btn_submit") != null;
-    if (url_Add_Topic || url_Topic){
+    Boolean url_Add_Topic =
+        httpRequest.getRequestURI().contains("Add_Topic") || httpRequest.getParameter("do") != null;
+    Boolean url_Topic =
+        httpRequest.getRequestURI().contains("topic")
+            && httpRequest.getParameter("btn_submit") != null;
+    if (url_Add_Topic || url_Topic) {
       HttpSession session = httpRequest.getSession();
-      System.out.println("session_id :"+session.getId());
-      if (session.getAttribute("userId") == null || session.getAttribute("username") == null) {
-        //httpRequest.setAttribute("userAuth", false);
-        httpRequest.getRequestDispatcher("/JSP/Login.jsp").forward(httpRequest,servletResponse);
+      System.out.println("session_id :" + session.getId());
+      if (session.getAttribute("User") == null) {
+        // httpRequest.setAttribute("userAuth", false);
+        httpRequest.getRequestDispatcher("/JSP/Login.jsp").forward(httpRequest, servletResponse);
       }
     }
     filterChain.doFilter(httpRequest, servletResponse);

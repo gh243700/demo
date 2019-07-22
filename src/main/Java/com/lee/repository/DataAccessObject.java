@@ -16,7 +16,7 @@ public abstract class DataAccessObject<T extends DataTransferObject> {
 
   public abstract List<T> readAll();
 
-  public abstract int delete(T obj);
+  public abstract int delete(int id);
 
   public abstract int update(T obj);
 

@@ -34,7 +34,7 @@
           </div>
         </li>
       </ul>
-      <c:if test="${sessionScope.userId == null}">
+      <c:if test="${sessionScope.User == null}">
         <ul class="navbar-nav ml-auto ">
           <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
@@ -81,7 +81,7 @@
         </ul>
         <a href="register" class="btn btn-danger">SIGN UP</a>
       </c:if>
-      <c:if test="${sessionScope.userId!=null}">
+      <c:if test="${sessionScope.User!=null}">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
             <button
@@ -91,7 +91,7 @@
                   letter-spacing: 1px;
                   line-height: 15px; background-color: #545b62"
             >
-              ${sessionScope.username}
+              ${sessionScope.User.username}
             </button>
             <div
               class="container dropdown-menu dropdown-menu-right"

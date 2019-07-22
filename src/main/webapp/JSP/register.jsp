@@ -13,10 +13,16 @@
             crossorigin="anonymous"
     />
 </head>
-
 <body>
+<%--<c:if test="${requestScope.message['checkInputHasNull'] != null}">--%>
+<%--    <h2>ffffffffffffffffffffffffffffffffff</h2>--%>
+<%--    <script>--%>
+<%--      alert("rere");--%>
+<%--    </script>--%>
+<%--</c:if>--%>
+
 <header>
-    <jsp:include page="header.jsp"></jsp:include>
+    <jsp:include page="header.jsp"/>
 </header>
 <br/>
 <br/>
@@ -31,7 +37,7 @@
                     class="form-control"
                     value="${requestScope.data.username}"
             />
-            <small class=" form-text text-muted">${requestScope.checkUsernameMessage}</small>
+            <small class=" form-text text-muted">${requestScope.message["checkUsernameMessage"]}</small>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
@@ -42,7 +48,7 @@
                     placeholder="Enter Email"
                     value="${requestScope.data.email}"
             />
-            <small class=" form-text text-muted">${requestScope.checkEmailMessage}</small>
+            <small class=" form-text text-muted">${requestScope.message["checkEmailMessage"]}</small>
         </div>
         <div class="row">
             <div class="col form-group">
@@ -74,7 +80,6 @@
                     class="form-control"
                     placeholder="Enter Password"
                     value="${requestScope.data.password}"
-
             />
         </div>
         <div class="form-gorup">
@@ -87,6 +92,7 @@
                     value="${requestScope.data.age}"
             />
         </div>
+        <small class=" form-text text-muted">${requestScope.message["wrongFormatMessage"]}</small>
         <button
                 name="regisger"
                 type="submit"
