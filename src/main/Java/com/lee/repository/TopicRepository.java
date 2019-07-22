@@ -60,7 +60,7 @@ public class TopicRepository extends DataAccessObject<Topic> {
                 forum);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      return null;
     }
     return topic;
   }
@@ -111,7 +111,7 @@ public class TopicRepository extends DataAccessObject<Topic> {
         list.add(topic);
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      return null;
     }
     return list;
   }
@@ -146,7 +146,7 @@ public class TopicRepository extends DataAccessObject<Topic> {
       // statement.setInt(8,obj.getReplies());
       rowsAffected = statement.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      return 0;
     }
     return rowsAffected;
   }

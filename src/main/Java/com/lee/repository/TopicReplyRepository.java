@@ -38,7 +38,6 @@ public class TopicReplyRepository extends DataAccessObject<TopicReply> {
 
   @Override
   public TopicReply readById(int id) {
-
     TopicReply topicReply = null;
     try (PreparedStatement preparedStatement = connection.prepareStatement(READ_BY_ID)) {
       preparedStatement.setInt(1, id);
@@ -50,33 +49,37 @@ public class TopicReplyRepository extends DataAccessObject<TopicReply> {
         topicReply.setCreated(resultSet.getDate(3));
         topicReply.setP_topic(resultSet.getInt(4));
         topicReply.setU_id(resultSet.getInt(5));
-        User user = new User();
-        user.setId(resultSet.getInt(6));
-        user.setUsername(resultSet.getString(7));
-        user.setFirst_name(resultSet.getString(8));
-        user.setLast_name(resultSet.getString(9));
-        user.setEmail(resultSet.getString(10));
-        user.setAge(resultSet.getInt(11));
-        user.setCreated_on(resultSet.getDate(12));
-        user.setLast_login(resultSet.getDate(13));
-        user.setPassword(resultSet.getString(14));
-        topicReply.setUser(user);
-        Topic topic = new Topic();
-        topic.setId(resultSet.getInt(15));
-        topic.setUser_id(resultSet.getInt(16));
-        topic.setPost_date(resultSet.getDate(17));
-        topic.setTitle(resultSet.getString(18));
-        topic.setMain_content(resultSet.getString(19));
-        topic.setEdited(resultSet.getBoolean(20));
-        topic.setReplies(resultSet.getInt(21));
-        topic.setCatagory(resultSet.getInt(22));
-        topicReply.setTopic(topic);
+        duplecateCode(topicReply, resultSet);
       }
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
     }
     return topicReply;
+  }
+
+  private void duplecateCode(TopicReply topicReply, ResultSet resultSet) throws SQLException {
+    User user = new User();
+    user.setId(resultSet.getInt(6));
+    user.setUsername(resultSet.getString(7));
+    user.setFirst_name(resultSet.getString(8));
+    user.setLast_name(resultSet.getString(9));
+    user.setEmail(resultSet.getString(10));
+    user.setAge(resultSet.getInt(11));
+    user.setCreated_on(resultSet.getDate(12));
+    user.setLast_login(resultSet.getDate(13));
+    user.setPassword(resultSet.getString(14));
+    topicReply.setUser(user);
+    Topic topic = new Topic();
+    topic.setId(resultSet.getInt(15));
+    topic.setUser_id(resultSet.getInt(16));
+    topic.setPost_date(resultSet.getDate(17));
+    topic.setTitle(resultSet.getString(18));
+    topic.setMain_content(resultSet.getString(19));
+    topic.setEdited(resultSet.getBoolean(20));
+    topic.setReplies(resultSet.getInt(21));
+    topic.setCatagory(resultSet.getInt(22));
+    topicReply.setTopic(topic);
   }
 
   @Override
@@ -102,27 +105,7 @@ public class TopicReplyRepository extends DataAccessObject<TopicReply> {
           id = topicReply.getP_topic();
           topicReply.setU_id(resultSet.getInt(5));
         }
-        User user = new User();
-        user.setId(resultSet.getInt(6));
-        user.setUsername(resultSet.getString(7));
-        user.setFirst_name(resultSet.getString(8));
-        user.setLast_name(resultSet.getString(9));
-        user.setEmail(resultSet.getString(10));
-        user.setAge(resultSet.getInt(11));
-        user.setCreated_on(resultSet.getDate(12));
-        user.setLast_login(resultSet.getDate(13));
-        user.setPassword(resultSet.getString(14));
-        topicReply.setUser(user);
-        Topic topic = new Topic();
-        topic.setId(resultSet.getInt(15));
-        topic.setUser_id(resultSet.getInt(16));
-        topic.setPost_date(resultSet.getDate(17));
-        topic.setTitle(resultSet.getString(18));
-        topic.setMain_content(resultSet.getString(19));
-        topic.setEdited(resultSet.getBoolean(20));
-        topic.setReplies(resultSet.getInt(21));
-        topic.setCatagory(resultSet.getInt(22));
-        topicReply.setTopic(topic);
+        duplecateCode(topicReply, resultSet);
         list.add(topicReply);
       }
     } catch (SQLException e) {
